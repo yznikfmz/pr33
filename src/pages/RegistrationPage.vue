@@ -33,9 +33,13 @@ function validate() {
     errors.email = 'Введите корректный email.'
   }
 
-  if (form.password.length < 6) {
-    errors.password = 'Пароль должен содержать не менее 6 символов.'
-  }
+  const passwordPattern =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/
+
+if (!passwordPattern.test(form.password)) {
+  errors.password =
+    'Нужно минимум 8 символов: строчная и заглавная буквы, цифра и спецсимвол.'
+}
 
   if (!form.confirmPassword || form.password !== form.confirmPassword) {
     errors.confirmPassword = 'Пароли должны совпадать.'
