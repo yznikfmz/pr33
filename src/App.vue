@@ -1,3 +1,6 @@
+<script setup>
+import RegistrationPage from './pages/RegistrationPage.vue'
+</script>
 <template>
   <main class="page-shell">
     <section class="intro-panel" aria-labelledby="intro-title">
@@ -23,9 +26,7 @@
         <p class="eyebrow">НАЧНИТЕ БЕСПЛАТНО</p>
         <h2 id="registration-title">Создать аккаунт</h2>
         <p class="form-subtitle">Заполните форму, чтобы присоединиться к Nova.</p>
-        <div class="form-placeholder" role="status">
-          Форма регистрации будет добавлена следующим шагом.
-        </div>
+        <RegistrationPage />
       </div>
       <p class="legal-note">Продолжая, вы соглашаетесь с условиями использования и политикой конфиденциальности.</p>
     </section>
