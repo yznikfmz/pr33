@@ -1,4 +1,5 @@
 <script setup>
+import axios from 'axios'
 import { reactive, ref } from 'vue'
 
 const form = reactive({
@@ -27,6 +28,8 @@ const passwordPattern =
 
 const submitted = ref(false)
 const successMessage = ref('')
+const isLoading = ref(false)
+const generalError = ref('')
 
 function validateField(field) {
   if (field === 'name') {
@@ -65,6 +68,7 @@ function touchAndValidate(field) {
   touched[field] = true
   successMessage.value = ''
   validateField(field)
+  generalError.value = ''
 }
 
 function validate() {
@@ -76,12 +80,41 @@ function validate() {
   return !Object.values(errors).some(Boolean)
 }
 
-function handleSubmit() {
+async function handleSubmit() {
   submitted.value = true
   successMessage.value = ''
+  generalError.value = ''
 
-  if (validate()) {
-    successMessage.value = 'Проверка пройдена. Отправку подключим следующим шагом.'
+  if (!validate()) return
+
+  isLoading.value = true
+
+  const payload = {
+    name: form.name.trim(),
+    email: form.email.trim(),
+    password: form.password,
+  }
+
+  try {
+    const response = await axios.post(
+      'https://jsonplaceholder.typicode.com/users',
+      payload,
+    )
+
+    successMessage.value =
+      `Регистрация отправлена (демо). ID пользователя: ${response.data.id}`
+  } catch (error) {
+    if (error.response) {
+      generalError.value =
+        `Ошибка сервера (${error.response.status}). Попробуйте позже.`
+    } else if (error.request) {
+      generalError.value =
+        'Не удалось связаться с сервером. Проверьте подключение.'
+    } else {
+      generalError.value = 'Не удалось отправить форму. Попробуйте ещё раз.'
+    }
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
@@ -158,10 +191,12 @@ function handleSubmit() {
   </span>
 </div>
 
-    <button class="btn-submit" type="submit">
-      Зарегистрироваться
-    </button>
-
+    <button class="btn-submit" type="submit" :disabled="isLoading">
+  {{ isLoading ? 'Отправка...' : 'Зарегистрироваться' }}
+</button>
+<p v-if="generalError" class="error-message" role="alert">
+  {{ generalError }}
+</p>
     <p v-if="successMessage" class="success-message">
       {{ successMessage }}
     </p>
